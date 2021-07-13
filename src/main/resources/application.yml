@@ -1,3 +1,25 @@
 micronaut:
   application:
     name: keyManager
+
+datasources:
+  default:
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/chavePix?createDatabaseIfNotExist=true&serverTimezone=UTC
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+    username: root
+    password: ${DB_PASSWORD:safadotaba}
+    schema-generate: CREATE_DROP
+    dialect: "org.hibernate.dialect.MySQL5InnoDBDialect"
+
+grpc:
+  server:
+    port: ${SERVER_PORT:50051}
+
+jpa:
+  default:
+    properties:
+      hibernate.hbm2ddl.auto: update
+      hibernate.show_sql: true
+
+# http clien
+endereco.client.itau: ${ITAU_URL:`http://localhost:9091`}

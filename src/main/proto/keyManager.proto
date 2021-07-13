@@ -8,13 +8,29 @@ option objc_class_prefix = "HLW";
 package br.com.zup.academy;
 
 service KeyManagerService {
-  rpc send (KeyManagerRequest) returns (KeyManagerReply) {}
+  rpc adicionar(KeyManagerRequest) returns (KeyManagerResponse) {}
 }
 
+enum TipoDeChave{
+  PreencheDefaultChave = 0;
+  CELULAR = 1;
+  EMAIL = 2;
+  ALEATORIA = 3;
+  CPF = 4;
+}
+
+enum TipoDeConta{
+  PreencheDefaultConta = 0;
+  CONTA_CORRENTE     = 1;
+  CONTA_POUPANCA     = 2;
+}
 message KeyManagerRequest {
-  string name = 1;
+  string id = 1;
+  TipoDeChave tipoDeChave = 2;
+  string valorChave = 3;
+  TipoDeConta tipoDeConta = 4;
 }
 
-message KeyManagerReply {
-  string message = 1;
+message KeyManagerResponse {
+  string id = 1;
 }
