@@ -26,7 +26,7 @@ data class NovaChavePix(
     val tipoConta: TipoConta?
 ) {
     fun converter(conta: DetalhesConta): ChavePix {
-        return ChavePix(clienteId = UUID.fromString(clienteId),
+        return ChavePix(clienteId = clienteId.toString(),
             tipoChave = TipoChave.valueOf(tipoChave!!.name),
             tipoConta = TipoConta.valueOf(tipoConta!!.name),
             valorChave = if (this.tipoChave == TipoChave.ALEATORIA) {

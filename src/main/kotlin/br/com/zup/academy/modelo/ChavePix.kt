@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull
 
 @Entity
 class ChavePix(
-    @field:NotNull @Column(nullable = false) val clienteId: UUID,
+    @field:NotNull @Column(nullable = false) val clienteId: String,
     @field:NotNull @Enumerated(EnumType.STRING) @Column(nullable = false) val tipoChave: TipoChave,
     @field:NotNull @Enumerated(EnumType.STRING) @Column(nullable = false) val tipoConta: TipoConta,
     @field:NotBlank @Column(nullable = false, unique = true) val valorChave: String,
@@ -17,7 +17,7 @@ class ChavePix(
 ){
     @Id
     @GeneratedValue
-    @Column(length = 16)
+    @Column(columnDefinition = "BINARY(16)")
     val id: UUID? = null
 
     @Column(nullable = false)

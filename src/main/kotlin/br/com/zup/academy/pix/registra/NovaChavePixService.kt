@@ -25,7 +25,7 @@ class NovaChavePixService(@Inject val repository: ChavePixRepository,
 
         if(repository.existsByValorChave(novaChave.chave)){
             //criar a classe de erro.
-            throw ChavePixExistenteException("Chave pix '${novaChave.chave}' existente")
+            throw ChavePixExistenteException("Chave pix '${novaChave.chave}' ja esta cadastrada")
         }
 
         val response = itauClient.buscar(novaChave.clienteId!!, novaChave.tipoConta!!.name)

@@ -14,7 +14,7 @@ import kotlin.reflect.KClass
 @Retention(AnnotationRetention.RUNTIME)
 @Constraint(validatedBy = [ValidaPixKeyValidator::class])
 annotation class ValidaPixKey(
-    val message: String = "O formato da chave pix passada não é válido",
+    val message: String = "A chave passada '\${validatedValue.tipoChave}' nao é valida",
     val groups: Array<KClass<Any>> = [],
     val payload: Array<KClass<Payload>> = []
 

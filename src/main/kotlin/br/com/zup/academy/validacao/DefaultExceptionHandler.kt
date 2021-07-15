@@ -2,6 +2,7 @@ package br.com.zup.academy.validacao
 
 import br.com.zup.academy.validacao.ExceptionHandler.*
 import io.grpc.Status
+import io.micronaut.http.client.exceptions.HttpClientResponseException
 import javax.validation.ConstraintViolationException
 
 class DefaultExceptionHandler : ExceptionHandler<Exception> {
