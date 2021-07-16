@@ -23,11 +23,10 @@ class DeletaChaveService(@Inject val repository: ChavePixRepository) {
     fun deleta(@Valid aChave: DeletaChavePix) {
 
         val possivelChave = repository.findById(UUID.fromString(aChave.pixId))
-
         if(possivelChave.isEmpty){
             throw ChavePixNaoExistenteException("Id ${aChave.pixId} não encontrado")
         }
-        if(possivelChave.get().clienteId.equals(aChave.clientId)){
+        if(!possivelChave.get().clienteId.toString().equals(aChave.clientId)){
             throw IllegalArgumentException("A chave não pertence ao usuario")
         }
         repository.deleteById(possivelChave.get().id!!)

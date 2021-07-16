@@ -9,6 +9,32 @@ package br.com.zup.academy;
 
 service KeyManagerService {
   rpc adicionar(KeyManagerRequest) returns (KeyManagerResponse) {}
+
+}
+
+service KeyManagerServiceDelete{
+  rpc remover(KeyDeleteRequest) returns (KeyDeleteResponse){}
+
+}
+
+message KeyDeleteRequest{
+  string clienteId = 1;
+  string pixId = 2;
+}
+
+message KeyDeleteResponse{
+  string msg = 1;
+}
+
+message KeyManagerRequest {
+  string id = 1;
+  TipoDeChave tipoDeChave = 2;
+  string valorChave = 3;
+  TipoDeConta tipoDeConta = 4;
+}
+
+message KeyManagerResponse {
+  string id = 1;
 }
 
 enum TipoDeChave{
@@ -23,14 +49,4 @@ enum TipoDeConta{
   PreencheDefaultConta = 0;
   CONTA_CORRENTE     = 1;
   CONTA_POUPANCA     = 2;
-}
-message KeyManagerRequest {
-  string id = 1;
-  TipoDeChave tipoDeChave = 2;
-  string valorChave = 3;
-  TipoDeConta tipoDeConta = 4;
-}
-
-message KeyManagerResponse {
-  string id = 1;
 }

@@ -1,9 +1,6 @@
 package br.com.zup.academy.pix.registra
 
-import br.com.zup.academy.KeyManagerRequest
-import br.com.zup.academy.KeyManagerServiceGrpc
-import br.com.zup.academy.TipoDeChave
-import br.com.zup.academy.TipoDeConta
+import br.com.zup.academy.*
 import br.com.zup.academy.dto.DadosDaContaResponse
 import br.com.zup.academy.dto.InstituicaoResponse
 import br.com.zup.academy.dto.TitularResponse
@@ -29,6 +26,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
+import java.util.*
 import javax.inject.Inject
 
 @MicronautTest(transactional = false)
@@ -79,7 +77,7 @@ internal class KeyManagerEndpointTest(
 
         //cenario
         val aChave = repository.save(ChavePix(
-            clienteId = "c56dfef4-7901-44fb-84e2-a2cefb157890",
+            clienteId = UUID.fromString("c56dfef4-7901-44fb-84e2-a2cefb157890"),
             tipoChave = TipoChave.CELULAR,
             tipoConta = TipoConta.CONTA_CORRENTE,
             valorChave = "+5534999999999",
@@ -94,7 +92,7 @@ internal class KeyManagerEndpointTest(
         //ação -> cadastrar um registro duplicado
         val oErro = assertThrows<StatusRuntimeException> {
             grpcClient.adicionar(KeyManagerRequest.newBuilder()
-                .setId(aChave.clienteId)
+                .setId(aChave.clienteId.toString())
                 .setTipoDeChave(TipoDeChave.CELULAR)
                 .setValorChave(aChave.valorChave)
                 .setTipoDeConta(TipoDeConta.CONTA_CORRENTE)
