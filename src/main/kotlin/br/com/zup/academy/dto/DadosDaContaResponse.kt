@@ -10,7 +10,7 @@ data class DadosDaContaResponse(
     val titular: TitularResponse
 ) {
     fun converter(): DetalhesConta {
-        return DetalhesConta(instituicao = instituicao.nome,
+        return DetalhesConta(instituicao = instituicao.ispb,
                             nomeTitular = titular.nome,
                             cpfTitular = titular.cpf,
                             agencia = agencia,

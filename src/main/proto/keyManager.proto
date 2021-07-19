@@ -39,9 +39,9 @@ message KeyManagerResponse {
 
 enum TipoDeChave{
   PreencheDefaultChave = 0;
-  CELULAR = 1;
+  PHONE = 1;
   EMAIL = 2;
-  ALEATORIA = 3;
+  RANDOM = 3;
   CPF = 4;
 }
 

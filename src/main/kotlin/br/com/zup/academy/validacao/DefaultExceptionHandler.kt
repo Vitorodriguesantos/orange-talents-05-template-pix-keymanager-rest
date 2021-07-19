@@ -1,8 +1,7 @@
 package br.com.zup.academy.validacao
 
-import br.com.zup.academy.validacao.ExceptionHandler.*
+import br.com.zup.academy.validacao.ExceptionHandler.StatusWithDetails
 import io.grpc.Status
-import io.micronaut.http.client.exceptions.HttpClientResponseException
 import javax.validation.ConstraintViolationException
 
 class DefaultExceptionHandler : ExceptionHandler<Exception> {
@@ -12,6 +11,7 @@ class DefaultExceptionHandler : ExceptionHandler<Exception> {
             is IllegalArgumentException -> Status.INVALID_ARGUMENT.withDescription(e.message)
             is IllegalStateException -> Status.FAILED_PRECONDITION.withDescription(e.message)
             is ConstraintViolationException -> Status.INVALID_ARGUMENT.withDescription(e.message)
+            is InternalError -> Status.INTERNAL.withDescription(e.message)
             else -> Status.UNKNOWN.withDescription(e.message)
         }
         return StatusWithDetails(status.withCause(e))

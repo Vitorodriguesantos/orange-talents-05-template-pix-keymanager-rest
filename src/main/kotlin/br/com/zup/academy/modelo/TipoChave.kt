@@ -18,7 +18,7 @@ enum class TipoChave {
             }
         }
     },
-    CELULAR {
+    PHONE {
         override fun validaChave(chave: String?): Boolean {
             if(chave.isNullOrBlank()){
                 return false
@@ -37,7 +37,7 @@ enum class TipoChave {
             }
         }
     },
-    ALEATORIA {
+    RANDOM {
         override fun validaChave(chave: String?) = chave.isNullOrBlank() //se estiver preenchida retorna false
     };
 

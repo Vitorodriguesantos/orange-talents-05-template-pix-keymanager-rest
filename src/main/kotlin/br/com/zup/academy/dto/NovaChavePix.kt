@@ -25,14 +25,45 @@ data class NovaChavePix(
     @field:NotNull
     val tipoConta: TipoConta?
 ) {
-    fun converter(conta: DetalhesConta): ChavePix {
-        return ChavePix(clienteId = UUID.fromString(clienteId),
+    fun converterBcb(conta: DetalhesConta): CreatePixKeyRequest {
+        return CreatePixKeyRequest(
+            keyType = tipoChave!!.name,
+            key = chave!!,
+            bankAccount = BankAccount(
+                participant = conta.instituicao,
+                branch = conta.agencia,
+                accountNumber = conta.numeroConta,
+                accountType = if(TipoConta.valueOf(tipoConta!!.name).equals("CONTA_CORRENTE")){
+                    "CACC"
+                }else "SVGS"),
+            Owner(
+                type = if (TipoChave.valueOf(tipoChave!!.name).equals("CNPJ")) {
+                    "LEGAL_PERSON"
+                } else "NATURAL_PERSON",
+                name = conta.nomeTitular,
+                taxIdNumber = conta.cpfTitular))}
+
+    fun converterBanco(bcbResponse: CreatePixKeyResponse,conta: DetalhesConta): ChavePix {
+        return ChavePix(
+            clienteId = UUID.fromString(clienteId),
             tipoChave = TipoChave.valueOf(tipoChave!!.name),
             tipoConta = TipoConta.valueOf(tipoConta!!.name),
-            valorChave = if (this.tipoChave == TipoChave.ALEATORIA) {
-                UUID.randomUUID().toString()
+            valorChave = if (this.tipoChave == TipoChave.RANDOM) {
+                bcbResponse.key
             } else {
                 this.chave!! },
-        conta)
+            conta = conta
+        )
     }
+
+    /*    fun converter(conta: DetalhesConta): ChavePix {
+           return ChavePix(clienteId = UUID.fromString(clienteId),
+               tipoChave = TipoChave.valueOf(tipoChave!!.name),
+               tipoConta = TipoConta.valueOf(tipoConta!!.name),
+               valorChave = if (this.tipoChave == TipoChave.ALEATORIA) {
+                   UUID.randomUUID().toString()
+               } else {
+                   this.chave!! },
+           conta)
+       } ----> ALTERAÇÕES PARA BCB*/
 }

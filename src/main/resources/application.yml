@@ -21,5 +21,7 @@ jpa:
       hibernate.hbm2ddl.auto: update
       hibernate.show_sql: true
 
-# http clien
+# http cliente
 endereco.client.itau: ${ITAU_URL:`http://localhost:9091`}
+
+endereco.client.bcb: ${ITAU_URL:`http://localhost:8082`}
