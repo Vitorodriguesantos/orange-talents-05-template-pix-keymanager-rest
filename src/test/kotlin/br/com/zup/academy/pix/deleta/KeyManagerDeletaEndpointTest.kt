@@ -2,6 +2,9 @@ package br.com.zup.academy.pix.deleta
 
 import br.com.zup.academy.KeyDeleteRequest
 import br.com.zup.academy.KeyManagerServiceDeleteGrpc
+import br.com.zup.academy.dto.DeletePixKeyRequest
+import br.com.zup.academy.dto.DeletePixKeyResponse
+import br.com.zup.academy.externos.ServicoContasBcbClient
 import br.com.zup.academy.modelo.ChavePix
 import br.com.zup.academy.modelo.DetalhesConta
 import br.com.zup.academy.modelo.TipoChave
@@ -14,9 +17,14 @@ import io.micronaut.context.annotation.Bean
 import io.micronaut.context.annotation.Factory
 import io.micronaut.grpc.annotation.GrpcChannel
 import io.micronaut.grpc.server.GrpcServerChannel
+import io.micronaut.http.HttpResponse
+import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.*
+import org.mockito.Mockito
+import java.time.LocalDateTime
 import java.util.*
+import javax.inject.Inject
 
 @MicronautTest(transactional = false)
 internal class KeyManagerDeletaEndpointTest(
@@ -24,6 +32,9 @@ internal class KeyManagerDeletaEndpointTest(
     val grpcCliente: KeyManagerServiceDeleteGrpc.KeyManagerServiceDeleteBlockingStub,
 ){
     lateinit var aChavePix: ChavePix
+
+    @Inject
+    lateinit var bcbClient: ServicoContasBcbClient
 
     @BeforeEach
     fun setUp(){
@@ -41,6 +52,18 @@ internal class KeyManagerDeletaEndpointTest(
 
     @Test
     fun `deve deletar uma chave pix`(){
+
+        val deletaPixKeyResponse = DeletePixKeyResponse(
+            aChavePix.id.toString(),
+            aChavePix.conta.instituicao,
+            LocalDateTime.now().toString())
+
+        Mockito.`when`(bcbClient.deletar(
+            key = aChavePix.valorChave,
+            deletePixKeyRequest = DeletePixKeyRequest(
+                aChavePix.valorChave,
+                aChavePix.conta.instituicao
+            ))).thenReturn(HttpResponse.ok(deletaPixKeyResponse))
 
         val resposta = grpcCliente.remover(KeyDeleteRequest.newBuilder()
             .setClienteId(aChavePix.clienteId.toString())
@@ -89,6 +112,34 @@ internal class KeyManagerDeletaEndpointTest(
         }
     }
 
+    @Test
+    fun `nao deve deletar uma chave quando nao deletar no bcb`(){
+
+        val deletaPixKeyResponse = DeletePixKeyResponse(
+            aChavePix.id.toString(),
+            aChavePix.conta.instituicao,
+            LocalDateTime.now().toString())
+
+        Mockito.`when`(bcbClient.deletar(
+            key = aChavePix.valorChave,
+            deletePixKeyRequest = DeletePixKeyRequest(
+                aChavePix.valorChave,
+                aChavePix.conta.instituicao
+            ))).thenReturn(HttpResponse.notFound())
+
+        val oErro = assertThrows<StatusRuntimeException> {
+            grpcCliente.remover(KeyDeleteRequest.newBuilder()
+                .setClienteId(aChavePix.clienteId.toString())
+                .setPixId(aChavePix.id.toString())
+                .build())
+        }
+
+        with(oErro){
+            Assertions.assertEquals("Falha ao deletar chave no Banco Central",this.status.description)
+            Assertions.assertTrue(repository.existsById(aChavePix.id))
+        }
+    }
+
 
     @Factory
     class Clients{
@@ -109,12 +160,17 @@ internal class KeyManagerDeletaEndpointTest(
             valorChave = chave,
             tipoConta = TipoConta.CONTA_CORRENTE,
             conta = DetalhesConta(
-                instituicao = "UNIBANCO ITAU",
+                instituicao = "60701190",
                 nomeTitular = "Rafael Ponte",
                 cpfTitular = "12345678900",
                 agencia = "1218",
                 numeroConta = "123456"
             )
         )
+    }
+
+    @MockBean(ServicoContasBcbClient::class)
+    fun enderecoMockBcb(): ServicoContasBcbClient {
+        return Mockito.mock(ServicoContasBcbClient::class.java)
     }
 }

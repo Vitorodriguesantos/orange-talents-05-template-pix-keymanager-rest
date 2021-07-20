@@ -48,7 +48,7 @@ class DeletaChaveService(
         LOGGER.info("CODEE -> "+deleteResponse.status)
         //abortar transação caso
         if(deleteResponse.status != HttpStatus.OK){
-            throw InternalError("Falha ao deletar chave no Banco Central")
+            throw IllegalStateException("Falha ao deletar chave no Banco Central")
         }
     }
 

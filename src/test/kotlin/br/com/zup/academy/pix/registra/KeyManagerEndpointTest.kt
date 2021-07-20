@@ -1,9 +1,11 @@
 package br.com.zup.academy.pix.registra
 
-import br.com.zup.academy.*
-import br.com.zup.academy.dto.DadosDaContaResponse
-import br.com.zup.academy.dto.InstituicaoResponse
-import br.com.zup.academy.dto.TitularResponse
+import br.com.zup.academy.KeyManagerRequest
+import br.com.zup.academy.KeyManagerServiceGrpc
+import br.com.zup.academy.TipoDeChave
+import br.com.zup.academy.TipoDeConta
+import br.com.zup.academy.dto.*
+import br.com.zup.academy.externos.ServicoContasBcbClient
 import br.com.zup.academy.externos.ServicoContasItauClient
 import br.com.zup.academy.modelo.ChavePix
 import br.com.zup.academy.modelo.DetalhesConta
@@ -20,12 +22,12 @@ import io.micronaut.grpc.server.GrpcServerChannel
 import io.micronaut.http.HttpResponse
 import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
-import org.junit.experimental.theories.suppliers.TestedOn
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
+import java.time.LocalDateTime
 import java.util.*
 import javax.inject.Inject
 
@@ -37,6 +39,9 @@ internal class KeyManagerEndpointTest(
     @Inject
     lateinit var itauClient: ServicoContasItauClient
 
+    @Inject
+    lateinit var bcbClient: ServicoContasBcbClient
+
     @BeforeEach
     fun setUp(){
         //preparando cenario
@@ -46,29 +51,46 @@ internal class KeyManagerEndpointTest(
     @Test
     fun `deve cadastrar uma chave pix`(){
 
-        val dadosDaContaResponse = DadosDaContaResponse(
+        val dadosDaContaResponseItau = DadosDaContaResponse(
             "CONTA_CORRENTE",
-            InstituicaoResponse("ITAU","xxx"),
-            "0000",
-            "545001-1",
-            TitularResponse("Juscilek","14501932122")
+            InstituicaoResponse("ITAU","60701190"),
+            "0001",
+            "291900",
+            TitularResponse("Rafael M C Ponte","02467781054")
         )
+
+        val dadosDaContaResponseBcb = CreatePixKeyResponse(
+            keyType = "PHONE",
+            key = "+5534997990088",
+            bankAccount = BankAccount("60701190","0001","291900","SVGS"),
+            owner = Owner("NATURAL_PERSON","Rafael M C Ponte","02467781054"),
+            createdAt = LocalDateTime.now().toString())
 
         //cenario
         Mockito.`when`(itauClient.buscar(
             "c56dfef4-7901-44fb-84e2-a2cefb157890",
             "CONTA_CORRENTE"))
-            .thenReturn(HttpResponse.ok(dadosDaContaResponse))
+            .thenReturn(HttpResponse.ok(dadosDaContaResponseItau))
 
+        Mockito.`when`(bcbClient.cadastrar(CreatePixKeyRequest(
+            "PHONE",
+            "+5534997990088",
+            BankAccount("60701190","0001","291900","SVGS"),
+            Owner("NATURAL_PERSON","Rafael M C Ponte","02467781054"))))
+            .thenReturn(HttpResponse.created(dadosDaContaResponseBcb))
+
+        //acao
         val response = grpcClient.adicionar(KeyManagerRequest.newBuilder()
             .setId("c56dfef4-7901-44fb-84e2-a2cefb157890")
-            .setTipoDeChave(TipoDeChave.CELULAR)
-            .setValorChave("+55988888888")
+            .setTipoDeChave(TipoDeChave.PHONE)
+            .setValorChave("+5534997990088")
             .setTipoDeConta(TipoDeConta.CONTA_CORRENTE)
             .build())
 
+        //validacao
         with(response){
             Assertions.assertNotNull(id)
+            Assertions.assertTrue(repository.existsById(UUID.fromString(id)))
         }
     }
 
@@ -82,18 +104,18 @@ internal class KeyManagerEndpointTest(
             tipoConta = TipoConta.CONTA_CORRENTE,
             valorChave = "+5534999999999",
             DetalhesConta(
-                "Itau",
-                "Vitor",
-                "1112223334",
-                "0000",
-                "1111322"
+                "60701190",
+                "Rafael M C Ponte",
+                "02467781054",
+                "0001",
+                "291900"
             )))
 
         //ação -> cadastrar um registro duplicado
         val oErro = assertThrows<StatusRuntimeException> {
             grpcClient.adicionar(KeyManagerRequest.newBuilder()
                 .setId(aChave.clienteId.toString())
-                .setTipoDeChave(TipoDeChave.CELULAR)
+                .setTipoDeChave(TipoDeChave.PHONE)
                 .setValorChave(aChave.valorChave)
                 .setTipoDeConta(TipoDeConta.CONTA_CORRENTE)
                 .build())
@@ -141,7 +163,7 @@ internal class KeyManagerEndpointTest(
         val oErro = assertThrows<StatusRuntimeException> {
             grpcClient.adicionar(KeyManagerRequest.newBuilder()
                 .setId("c56dfef4-7901-44fb-84e2-a2cefb157890")
-                .setTipoDeChave(TipoDeChave.CELULAR)
+                .setTipoDeChave(TipoDeChave.PHONE)
                 .setValorChave("+5534988887777")
                 .setTipoDeConta(TipoDeConta.CONTA_CORRENTE)
                 .build())
@@ -155,6 +177,48 @@ internal class KeyManagerEndpointTest(
 
     }
 
+    @Test
+    fun `nao deve cadastrar uma chave que nao foi cadastrada no BCB`(){
+
+        val dadosDaContaResponseItau = DadosDaContaResponse(
+            "CONTA_CORRENTE",
+            InstituicaoResponse("ITAU","60701190"),
+            "0001",
+            "291900",
+            TitularResponse("Rafael M C Ponte","02467781054")
+        )
+
+        //cenario
+        Mockito.`when`(itauClient.buscar(
+            "c56dfef4-7901-44fb-84e2-a2cefb157890",
+            "CONTA_CORRENTE"))
+            .thenReturn(HttpResponse.ok(dadosDaContaResponseItau))
+
+        Mockito.`when`(bcbClient.cadastrar(CreatePixKeyRequest(
+            "PHONE",
+            "+5534997990088",
+            BankAccount("60701190","0001","291900","SVGS"),
+            Owner("NATURAL_PERSON","Rafael M C Ponte","02467781054"))))
+            .thenReturn(HttpResponse.badRequest())
+
+        //acao
+        val oErro = assertThrows<StatusRuntimeException> {
+            grpcClient.adicionar(KeyManagerRequest.newBuilder()
+                .setId("c56dfef4-7901-44fb-84e2-a2cefb157890")
+                .setTipoDeChave(TipoDeChave.PHONE)
+                .setValorChave("+5534997990088")
+                .setTipoDeConta(TipoDeConta.CONTA_CORRENTE)
+                .build())
+        }
+
+        //validacao
+        with(oErro){
+            Assertions.assertEquals("Falha ao registra chave no Banco Central",this.status.description)
+            Assertions.assertEquals(Status.FAILED_PRECONDITION.code, this.status.code)
+        }
+
+    }
+
     @Factory
     class Clients{
         @Bean
@@ -164,7 +228,12 @@ internal class KeyManagerEndpointTest(
     }
 
     @MockBean(ServicoContasItauClient::class)
-    fun enderecoMock():ServicoContasItauClient{
+    fun enderecoMockItau():ServicoContasItauClient{
         return Mockito.mock(ServicoContasItauClient::class.java)
+    }
+
+    @MockBean(ServicoContasBcbClient::class)
+    fun enderecoMockBcb():ServicoContasBcbClient{
+        return Mockito.mock(ServicoContasBcbClient::class.java)
     }
 }
