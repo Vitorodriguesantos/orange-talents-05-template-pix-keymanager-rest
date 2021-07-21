@@ -34,4 +34,5 @@ interface ServicoContasBcbClient {
         "/api/v1/pix/keys/{key}",
         consumes = [MediaType.APPLICATION_XML])
     fun buscar(@PathVariable key: String):HttpResponse<PixKeyDetailsResponse>
+
 }

@@ -1,8 +1,9 @@
 package br.com.zup.academy.externos
 
 import br.com.zup.academy.*
-import br.com.zup.academy.dto.BuscaChavePix
+import br.com.zup.academy.KeyBuscarRequest.FiltroCase.*
 import br.com.zup.academy.dto.DeletaChavePix
+import br.com.zup.academy.dto.Filtro
 import br.com.zup.academy.dto.NovaChavePix
 import br.com.zup.academy.modelo.TipoChave
 import br.com.zup.academy.modelo.TipoConta
@@ -25,10 +26,16 @@ fun KeyDeleteRequest.converter() : DeletaChavePix {
         pixId = pixId
     )
 }
-//extension function
-fun KeyBuscarRequest.converter() : BuscaChavePix {
-    return BuscaChavePix(
-        clienteId = clienteId,
-        pixId = pixId
-    )
+//extension function para verificar qual a forma de busca, visto que no proto foi criado um
+//oneof
+fun KeyBuscarRequest.converter() : Filtro {
+    val filtro = when(filtroCase){
+        FILTROPIXID -> filtroPixId.let {
+            Filtro.BuscaPorPixId(it.clienteId,it.pixId)
+        }
+        CHAVE -> Filtro.BuscaPorChave(chave)
+        FILTRO_NOT_SET -> Filtro.Invalido()
+    }
+
+    return filtro
 }

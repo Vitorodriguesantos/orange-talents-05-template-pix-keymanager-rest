@@ -23,8 +23,14 @@ service KeyManagerServiceBuscar{
 }
 
 message KeyBuscarRequest{
-  string clienteId = 1;
-  string pixId = 2;
+  message FiltroPixId{
+    string clienteId = 1;
+    string pixId = 2;
+  }
+  oneof filtro{
+    FiltroPixId filtroPixId = 1;
+    string chave = 2;
+  }
 }
 
 message KeyBuscarResponse{

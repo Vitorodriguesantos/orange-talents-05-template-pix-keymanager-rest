@@ -4,12 +4,11 @@ import br.com.zup.academy.*
 
 object RetornoDetalhesChavePix {
     fun converter(
-        dadosChave: PixKeyDetailsResponse,
-        dadosRequisicao: BuscaChavePix,
+        dadosChave: PixKeyDetailsResponse
     ): KeyBuscarResponse {
         return KeyBuscarResponse.newBuilder()
-            .setPixId(dadosRequisicao.pixId)
-            .setClienteId(dadosRequisicao.clienteId)
+            .setPixId(dadosChave.pixId.toString() ?: "")
+            .setClienteId(dadosChave.clienteId.toString() ?: "")
             .setChavePix(KeyBuscarResponse.ChavePix.newBuilder()
                 .setTipoChave(TipoDeChave.valueOf(dadosChave.keyType))
                 .setChave(dadosChave.key)

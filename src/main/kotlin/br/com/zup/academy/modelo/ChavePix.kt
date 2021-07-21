@@ -15,6 +15,9 @@ data class ChavePix(
     @field:NotBlank @Column(nullable = false, unique = true) val valorChave: String,
     @field:Valid @Embedded val conta: DetalhesConta
 ){
+    //função para verificar se chave pertence ao cliente id passado
+    fun pertenceAo(clienteId: UUID) = this.clienteId.equals(clienteId)
+
     @Id
     @GeneratedValue
     @Column(columnDefinition = "BINARY(16)")

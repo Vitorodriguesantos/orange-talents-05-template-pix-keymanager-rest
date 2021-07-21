@@ -21,8 +21,8 @@ class KeyManagerBuscaEndpoint(
         responseObserver: StreamObserver<KeyBuscarResponse>,
     ) {
         val aChave = request.converter()
-        val dadosChave = aChave.converter(aChave,repository,bcbClient)
-        responseObserver.onNext(RetornoDetalhesChavePix.converter(dadosChave,aChave))
+        val dadosChave = aChave.filtra(repository,bcbClient)
+        responseObserver.onNext(RetornoDetalhesChavePix.converter(dadosChave))
         responseObserver.onCompleted()
 
     }
