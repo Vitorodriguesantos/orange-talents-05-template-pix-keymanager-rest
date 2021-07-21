@@ -1,6 +1,7 @@
 package br.com.zup.academy.externos
 
 import br.com.zup.academy.*
+import br.com.zup.academy.dto.BuscaChavePix
 import br.com.zup.academy.dto.DeletaChavePix
 import br.com.zup.academy.dto.NovaChavePix
 import br.com.zup.academy.modelo.TipoChave
@@ -17,10 +18,17 @@ fun KeyManagerRequest.converter(): NovaChavePix{
                                     TipoDeConta.PreencheDefaultConta -> null
                                     else -> TipoConta.valueOf(tipoDeConta.name)})
 }
-
+//extension function
 fun KeyDeleteRequest.converter() : DeletaChavePix {
     return DeletaChavePix(
         clientId = clienteId,
+        pixId = pixId
+    )
+}
+//extension function
+fun KeyBuscarRequest.converter() : BuscaChavePix {
+    return BuscaChavePix(
+        clienteId = clienteId,
         pixId = pixId
     )
 }

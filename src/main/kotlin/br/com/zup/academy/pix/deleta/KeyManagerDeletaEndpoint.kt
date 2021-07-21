@@ -11,9 +11,8 @@ import javax.inject.Singleton
 
 @ErrorHandler
 @Singleton
-class KeyManagerDeletaEndpoint (
-    @Inject val serviceDeletaChave: DeletaChaveService
-): KeyManagerServiceDeleteGrpc.KeyManagerServiceDeleteImplBase() {
+class KeyManagerDeletaEndpoint (@Inject val serviceDeletaChave: DeletaChaveService)
+    : KeyManagerServiceDeleteGrpc.KeyManagerServiceDeleteImplBase() {
     override fun remover(
         request: KeyDeleteRequest?,
         responseObserver: StreamObserver<KeyDeleteResponse>?,

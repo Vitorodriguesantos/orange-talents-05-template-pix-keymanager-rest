@@ -21,8 +21,6 @@ class NovaChavePixService(@Inject val repository: ChavePixRepository,
                           @Inject val itauClient: ServicoContasItauClient,
                           @Inject val bcbClient: ServicoContasBcbClient) {
 
-    private val LOGGER = LoggerFactory.getLogger(this::class.java)
-
     @Transactional
     fun registra(@Valid novaChave: NovaChavePix): ChavePix {
 
