@@ -43,7 +43,7 @@ internal class KeyManagerBuscaEndpointTest(
     fun setUp(){
         //preparando cenario
         chaveCadastrada = repository.save(ChavePix(
-            clienteId = UUID.fromString("c56dfef4-7901-44fb-84e2-a2cefb157890"),
+            clienteId = "c56dfef4-7901-44fb-84e2-a2cefb157890",
             tipoChave = TipoChave.PHONE,
             tipoConta = TipoConta.CONTA_CORRENTE,
             valorChave = "+5534999999999",

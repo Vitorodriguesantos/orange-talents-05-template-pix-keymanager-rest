@@ -20,6 +20,30 @@ service KeyManagerServiceDelete{
 
 service KeyManagerServiceBuscar{
   rpc buscar(KeyBuscarRequest) returns(KeyBuscarResponse){}
+
+}
+
+service KeyManagerServiceListar{
+  rpc listar(KeyListarRequest) returns (KeyListarResponse){}
+
+}
+
+message KeyListarRequest{
+  string clienteId = 1;
+
+}
+
+message KeyListarResponse{
+  message ChavePix{
+    string pixId = 1;
+    TipoDeChave tipoDeChave = 2;
+    string valorDaChave = 3;
+    TipoDeConta tipoDeConta = 4;
+    string criadaEm = 5;
+  }
+  string clienteId = 1;
+  repeated ChavePix chaves = 2;
+
 }
 
 message KeyBuscarRequest{
@@ -31,6 +55,7 @@ message KeyBuscarRequest{
     FiltroPixId filtroPixId = 1;
     string chave = 2;
   }
+
 }
 
 message KeyBuscarResponse{
@@ -58,10 +83,12 @@ message KeyBuscarResponse{
 message KeyDeleteRequest{
   string clienteId = 1;
   string pixId = 2;
+
 }
 
 message KeyDeleteResponse{
   string msg = 1;
+
 }
 
 message KeyManagerRequest {
@@ -69,10 +96,12 @@ message KeyManagerRequest {
   TipoDeChave tipoDeChave = 2;
   string valorChave = 3;
   TipoDeConta tipoDeConta = 4;
+
 }
 
 message KeyManagerResponse {
   string id = 1;
+
 }
 
 enum TipoDeChave{
@@ -81,10 +110,12 @@ enum TipoDeChave{
   EMAIL = 2;
   RANDOM = 3;
   CPF = 4;
+
 }
 
 enum TipoDeConta{
   PreencheDefaultConta = 0;
   CONTA_CORRENTE     = 1;
   CONTA_POUPANCA     = 2;
+
 }

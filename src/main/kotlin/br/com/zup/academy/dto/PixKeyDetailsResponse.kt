@@ -7,7 +7,7 @@ import java.util.*
 
 data class PixKeyDetailsResponse(
     val pixId: UUID? = null,
-    val clienteId: UUID? = null,
+    val clienteId: String? = null,
     val keyType: String,
     val key: String,
     val bankAccount: BankAccount,

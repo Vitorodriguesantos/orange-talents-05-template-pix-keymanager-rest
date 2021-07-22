@@ -155,7 +155,7 @@ internal class KeyManagerDeletaEndpointTest(
         clienteId: UUID = UUID.randomUUID()
     ): ChavePix {
         return ChavePix(
-            clienteId = clienteId,
+            clienteId = clienteId.toString(),
             tipoChave = tipo,
             valorChave = chave,
             tipoConta = TipoConta.CONTA_CORRENTE,

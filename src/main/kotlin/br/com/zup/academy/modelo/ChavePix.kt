@@ -9,14 +9,14 @@ import javax.validation.constraints.NotNull
 
 @Entity
 data class ChavePix(
-    @field:NotNull @Column(nullable = false) val clienteId: UUID,
+    @field:NotNull @Column(nullable = false) val clienteId: String,
     @field:NotNull @Enumerated(EnumType.STRING) @Column(nullable = false) val tipoChave: TipoChave,
     @field:NotNull @Enumerated(EnumType.STRING) @Column(nullable = false) val tipoConta: TipoConta,
     @field:NotBlank @Column(nullable = false, unique = true) val valorChave: String,
     @field:Valid @Embedded val conta: DetalhesConta
 ){
     //função para verificar se chave pertence ao cliente id passado
-    fun pertenceAo(clienteId: UUID) = this.clienteId.equals(clienteId)
+    fun pertenceAo(clienteId: UUID) = this.clienteId.equals(clienteId.toString())
 
     @Id
     @GeneratedValue

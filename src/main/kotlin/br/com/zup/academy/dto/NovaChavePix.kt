@@ -45,7 +45,7 @@ data class NovaChavePix(
 
     fun converterBanco(bcbResponse: CreatePixKeyResponse,conta: DetalhesConta): ChavePix {
         return ChavePix(
-            clienteId = UUID.fromString(clienteId),
+            clienteId = clienteId!!,
             tipoChave = TipoChave.valueOf(tipoChave!!.name),
             tipoConta = TipoConta.valueOf(tipoConta!!.name),
             valorChave = if (this.tipoChave == TipoChave.RANDOM) {
