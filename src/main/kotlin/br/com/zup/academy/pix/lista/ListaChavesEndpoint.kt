@@ -23,7 +23,6 @@ class ListaChavesEndpoint(
             throw IllegalArgumentException("Parametro cliente id obrigatorio")
 
         val clienteId = request.clienteId
-        println("AS CHAVESSSSSSSSSSSSSSSS-> "+repository.findAllByClienteId(clienteId))
         val asChaves = repository.findAllByClienteId(clienteId).map {
             KeyListarResponse.ChavePix.newBuilder()
                 .setPixId(it.id.toString())
