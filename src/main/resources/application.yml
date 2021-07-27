@@ -1,27 +1,13 @@
 micronaut:
   application:
-    name: keyManager
-
-datasources:
-  default:
-    url: jdbc:mysql://${DB_HOST:localhost}:3306/chavePix?createDatabaseIfNotExist=true&serverTimezone=UTC
-    driverClassName: "com.mysql.cj.jdbc.Driver"
-    username: root
-    password: ${DB_PASSWORD:safadotaba}
-    schema-generate: CREATE_DROP
-    dialect: "org.hibernate.dialect.MySQL5InnoDBDialect"
+    name: keyManagerRest
 
 grpc:
-  server:
-    port: ${SERVER_PORT:50051}
-
-jpa:
-  default:
-    properties:
-      hibernate.hbm2ddl.auto: update
-      hibernate.show_sql: true
-
-# http cliente
-endereco.client.itau: ${ITAU_URL:`http://localhost:9091`}
-
-endereco.client.bcb: ${ITAU_URL:`http://localhost:8082`}
+  client:
+    plaintext: true
+    max-retry-attempts: 5
+  channels:
+    chavepix:
+      address: ${GRPC_HOST:localhost}:50051
+      plaintext: true
+      max-retry-attempts: 5

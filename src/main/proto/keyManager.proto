@@ -5,7 +5,6 @@ option java_package = "br.com.zup.academy";
 option java_outer_classname = "KeyManager";
 option objc_class_prefix = "HLW";
 
-import "google/protobuf/timestamp.proto";
 package br.com.zup.academy;
 
 service KeyManagerService {
